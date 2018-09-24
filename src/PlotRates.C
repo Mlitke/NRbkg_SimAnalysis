@@ -281,11 +281,11 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		TString mname="h_NR_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
 			std::cout<<"Getting uptodate merged hist"<<std::endl;
-			h1->SetName("nr2copy");
-			h2 = (TH2F*)fmerged->Get(nr2d.Data());
+			//h1->SetName("nr2copy");
+			h2 = (TH2F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write(mname.Data(),TObject::kWriteDelete);
+			h2->Write("",TObject::kWriteDelete);
 		}
 		else{
 			std::cout<<"New merge hist"<<std::endl;
@@ -303,11 +303,11 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		TString mname="h_ER_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
 			std::cout<<"Getting uptodate merged hist"<<std::endl;
-			h1->SetName("er2copy");
-			h2 = (TH2F*)fmerged->Get(er2d.Data());
+			//h1->SetName("er2copy");
+			h2 = (TH2F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write(mname.Data(),TObject::kWriteDelete);
+			h2->Write("",TObject::kWriteDelete);
 		}
 		else{
 			std::cout<<"New merge hist"<<std::endl;
@@ -326,11 +326,11 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		TString mname="h_NR_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
 			std::cout<<"Getting uptodate merged hist"<<std::endl;
-			h1->SetName("nr1copy");
-			h2 = (TH1F*)fmerged->Get(nr1dav.Data());
+			//h1->SetName("nr1copy");
+			h2 = (TH1F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write(mname.Data(),TObject::kWriteDelete);
+			h2->Write("",TObject::kWriteDelete);
 		}
 		else{
 			std::cout<<"New merge hist"<<std::endl;
@@ -348,11 +348,11 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		TString mname="h_ER_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
 			std::cout<<"Getting uptodate merged hist"<<std::endl;
-			h1->SetName("er1copy");
+			//h1->SetName("er1copy");
 			h2 = (TH1F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write(mname.Data(),TObject::kWriteDelete);
+			h2->Write("",TObject::kWriteDelete);
 		}
 		else{
 			std::cout<<"New merge hist"<<std::endl;
