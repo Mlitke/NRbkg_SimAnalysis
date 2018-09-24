@@ -17,6 +17,7 @@ def cleanup(mdir):
 
 	with open('/global/homes/l/lkorley/myprojectdir/HighNR/lists/processlist.txt','w') as f:
 		for ip in processlist:
+			ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 			if ip=="":
 				continue
 			line = ip+"\n"
@@ -36,6 +37,7 @@ def cleanup(mdir):
 
 	with open('/global/homes/l/lkorley/myprojectdir/HighNR/lists/creatorlist.txt','w') as f:
 		for ip in processlist:
+			ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 			if ip=="":
 				continue
 			line = ip+"\n"

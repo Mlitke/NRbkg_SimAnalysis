@@ -1,5 +1,5 @@
 import sys,ROOT,glob,os
-import string
+import string,re
 from ROOT import TH2F,TH1F,TTree,TFile,TChain,TString,THStack
 
 #ROOT.gROOT.LoadMacro("/cvmfs/lz.opensciencegrid.org/BACCARAT/release-3.14.3/tools/BaccRootConverterEvent.hh+")
@@ -42,12 +42,14 @@ def GetProcesses(filelist,appendagename=""):
 		ROOT.listprocess(mychain,processes,cprocesses)
 		for ip in processes.Data().split(','):
 			if ip not in oprocesslist:
+				ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 				oprocesslist.append(ip)
 				with open(pname,"a") as f:
 					line = ip+"\n"
 					f.write(line)
 		for ip in cprocesses.Data().split(','):
 			if ip not in ocprocesslist:
+				ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 				ocprocesslist.append(ip)
 				with open(cpname,"a") as f:
 					line = ip+"\n"
@@ -81,8 +83,9 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 			for iproc in proclist:
 				if iproc=="":
 					continue
+				iproc = re.sub(r'[^\x00-\x7f]',r'', iproc)
 				print "Creator processes: "+iproc
-				ROOT.WriteHists(mychain,TString(outdir),TString(sourcename),TString("process("+icproc+")"))
+				ROOT.WriteHists(mychain,TString(outdir),TString(sourcename),TString("process("+iproc+")"))
 
 	if os.path.exists(cpname):
 		with open(cpname) as f:
@@ -90,6 +93,7 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 			for icproc in cproclist:
 				if icproc=="":
 					continue
+				icproc = re.sub(r'[^\x00-\x7f]',r'', icproc)
 				print "Process: "+icproc
 				ROOT.WriteHists(mychain,TString(outdir),TString(sourcename),TString(""),TString("creator("+icproc+")"))
 
@@ -100,7 +104,18 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 
 #####################################################################################
 
-#Mike's thstack function goes here
+def StackHists(TString comparison, dict1):
+	gStyle.SetPalette(kOcean)
+	c1=ROOT.TCanvas(comparison,comparison,800,600)
+	gPad.SetLogy()
+	gPad.SetLogx()
+	hists = ROOT.THStack(comparisons,"Energy distribution by"+comparison)
+	for key in dict1: 
+		dict1[key].GetXaxis().SetTitle("Energy [keV]")
+		dict1[key].GetYaxis().SetTitle("Rate [cts/ns]")
+		hists.Add(dict1[key])
+	hists.Draw("pfc nostack") 
+	return hists
 
 #####################################################################################
 
@@ -124,13 +139,16 @@ def MergePlot(filelist,outdir,appendagename=""):
 			nrhists = {}
 			erhists = {}
 			for iproc in proclist:
+				iproc = re.sub(r'[^\x00-\x7f]',r'', iproc)
+				if iproc=="":
+					continue
 				print "Processes: "+iproc
 				for folder in indirs:
 					for filename in glob.glob(folder):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
 						infile = TFile(filename)
-						ROOT.MergeHists(outfile,infile,TString(sourcename),TString("process("+icproc+")"))
+						ROOT.MergeHists(outfile,infile,TString(sourcename),TString("process("+iproc+")"))
 				
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
 				thiser = TH1F("hdummy1","dummy",10,0,10)
@@ -141,6 +159,11 @@ def MergePlot(filelist,outdir,appendagename=""):
 					nrhists[iproc] = thisnr
 					erhists[iproc] = thiser
 			#send dictionaries to mikes function
+			stacknr = StackHists(TString("NR Processes Stacked"),nrhists)
+			stacker = StackHists(TString("ER Processes Stacked"),erhists)
+			outfile.cd()
+			stacknr.Write()
+			stacker.Write()
 
 
 	if os.path.exists(cpname):
@@ -149,6 +172,9 @@ def MergePlot(filelist,outdir,appendagename=""):
 			nrhists = {}
 			erhists = {}
 			for icproc in cproclist:
+				icproc = re.sub(r'[^\x00-\x7f]',r'', icproc)
+				if icproc=="":
+					continue
 				print "Creator Process: "+icproc
 				for folder in indirs:
 					for filename in glob.glob(folder):
@@ -165,24 +191,39 @@ def MergePlot(filelist,outdir,appendagename=""):
 				else:
 					nrhists[iproc] = thisnr
 					erhists[iproc] = thiser
+			#send dictionaries to mikes function
+			stacknr = StackHists(TString("NR Creator Processes Stacked"),nrhists)
+			stacker = StackHists(TString("ER Creator Processes Stacked"),erhists)
+			outfile.cd()
+			stacknr.Write()
+			stacker.Write()
 
+
+	#nrhists = {}
+	#erhists = {}
 	for folder in indirs:
-		nrhists = {}
-		erhists = {}
+		component = folder.split('*')[0]
+		component = component.rstrip('/Plots/')
+		component = component.split('/')[-1]
 		for filename in glob.glob(folder):
 			sourcepath = filename.split('/')[-1]
 			sourcename = sourcepath.rstrip('_Plots.root')
 			infile = TFile(filename)
 			ROOT.MergeHists(outfile,infile,TString(sourcename))
-		thisnr = TH1F("hdummy1","dummy",10,0,10)
-		thiser = TH1F("hdummy1","dummy",10,0,10)
-		checkout = ROOT.DrawMerged(outfile,TString(outdir),thisnr,thiser,"","","","LiquidXenonTarget","n")
-		if checkout != 0:
-			print "ERROR :: One of the merged Hists could NOT be loaded!!!\n"
-		else:
-			nrhists[iproc] = thisnr
-			erhists[iproc] = thiser
+		#thisnr = TH1F("hdummy1","dummy",10,0,10)
+		#thiser = TH1F("hdummy1","dummy",10,0,10)
+		#checkout = ROOT.DrawMerged(outfile,TString(outdir),thisnr,thiser,"","","","LiquidXenonTarget","n")
+		#if checkout != 0:
+		#	print "ERROR :: One of the merged Hists could NOT be loaded!!!\n"
+		#else:
+		#	nrhists[component] = thisnr
+		#	erhists[component] = thiser
 	#to stacking function
+	#stacknr = StackHists(TString("NR Components Stacked"),nrhists)
+	#stacker = StackHists(TString("ER Components Stacked"),erhists)
+	#outfile.cd()
+	#stacknr.Write()
+	#stacker.Write()
 
 	dumnr = TH1F("hdummy1","dummy",10,0,10)
 	dumer = TH1F("hdummy1","dummy",10,0,10)

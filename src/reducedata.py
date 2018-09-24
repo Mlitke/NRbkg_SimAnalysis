@@ -41,9 +41,11 @@ def reduce(dirlist,outdir,listname=""):
 
 		for ip in processes.Data().split(','):
 			if ip not in oprocesslist and ip not in processlist and ip!="":
+				ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 				processlist.append(ip)
 		for ip in cprocesses.Data().split(','):
 			if ip not in ocprocesslist and ip not in cprocesslist and ip!="":
+				ip = re.sub(r'[^\x00-\x7f]',r'', ip)
 				cprocesslist.append(ip)
 
 	with open(pname,pname_wa) as f:
