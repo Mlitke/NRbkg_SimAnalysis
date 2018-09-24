@@ -352,7 +352,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	else
 		std::cout<<"WARNING :: "<<er1dav<<" Not found in input file!!!"<<std::endl;
 	
-	fmerged->Write();
+	//fmerged->Write();
 }
 
 int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process="",TString creatorprocess="",TString particlename="",TString volume="LiquidXenonTarget",TString savepng="y"){
