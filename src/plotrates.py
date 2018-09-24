@@ -104,7 +104,7 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 
 #####################################################################################
 
-def StackHists(TString comparison, dict1):
+def StackHists(comparison, dict1):
 	gStyle.SetPalette(kOcean)
 	c1=ROOT.TCanvas(comparison,comparison,800,600)
 	gPad.SetLogy()
@@ -228,6 +228,8 @@ def MergePlot(filelist,outdir,appendagename=""):
 	dumnr = TH1F("hdummy1","dummy",10,0,10)
 	dumer = TH1F("hdummy1","dummy",10,0,10)
 	ROOT.DrawMerged(outfile,TString(outdir),dumnr,dumer)
+
+	outfile.Write()
 
 #####################################################################################
 
