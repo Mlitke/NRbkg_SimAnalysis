@@ -274,7 +274,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	TString nr1dav = TString("h_NR_")+plotname+TString("_AvRate");
 	TString er1dav = TString("h_ER_")+plotname+TString("_AvRate");
 
-
+	std::cout<<"Merging in NR 2D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(nr2d.Data())){
 		TH2F *h1,*h2;
 		h1 = (TH2F*)fadd->Get(nr2d.Data()); 
@@ -294,6 +294,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	else
 		std::cout<<"WARNING :: "<<nr2d<<" Not found in input file!!!"<<std::endl;
 
+	std::cout<<"Merging in ER 2D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(er2d.Data())){
 		TH2F *h1,*h2;
 		h1 = (TH2F*)fadd->Get(er2d.Data()); 
@@ -314,6 +315,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		std::cout<<"WARNING :: "<<er2d<<" Not found in input file!!!"<<std::endl;
 
 
+	std::cout<<"Merging in NR 1D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(nr1dav.Data())){
 		TH1F *h1,*h2;
 		h1 = (TH1F*)fadd->Get(nr1dav.Data()); 
@@ -333,6 +335,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	else
 		std::cout<<"WARNING :: "<<nr1dav<<" Not found in input file!!!"<<std::endl;
 
+	std::cout<<"Merging in ER 1D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(er1dav.Data())){
 		TH1F *h1,*h2;
 		h1 = (TH1F*)fadd->Get(er1dav.Data()); 
