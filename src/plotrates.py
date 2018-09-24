@@ -151,6 +151,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 						infile = TFile(filename,"READ")
 						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString("process("+iproc+")"))
+						outfile.Close()
 						if outmode=="RECREATE":
 							outmode="Update"
 				print "Drawing merged hist"
@@ -163,11 +164,13 @@ def MergePlot(filelist,outdir,appendagename=""):
 					nrhists[iproc] = thisnr
 					erhists[iproc] = thiser
 			#send dictionaries to mikes function
+			outfile = TFile(outname,outmode)
 			stacknr = StackHists(TString("NR Processes Stacked"),nrhists)
 			stacker = StackHists(TString("ER Processes Stacked"),erhists)
 			outfile.cd()
 			stacknr.Write()
 			stacker.Write()
+			outfile.Write()
 
 
 	if os.path.exists(cpname):
@@ -187,6 +190,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 						infile = TFile(filename,"READ")
 						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString(""),TString("creator("+icproc+")"))
+						outfile.Close()
 						if outmode=="RECREATE":
 							outmode="Update"
 				
@@ -199,11 +203,13 @@ def MergePlot(filelist,outdir,appendagename=""):
 					nrhists[iproc] = thisnr
 					erhists[iproc] = thiser
 			#send dictionaries to mikes function
+			outfile = TFile(outname,outmode)
 			stacknr = StackHists(TString("NR Creator Processes Stacked"),nrhists)
 			stacker = StackHists(TString("ER Creator Processes Stacked"),erhists)
 			outfile.cd()
 			stacknr.Write()
 			stacker.Write()
+			outfile.Write()
 
 
 	#nrhists = {}
@@ -218,6 +224,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 			infile = TFile(filename,"READ")
 			outfile = TFile(outname,outmode)
 			ROOT.MergeHists(outfile,infile,TString(sourcename))
+			outfile.Close()
 			if outmode=="RECREATE":
 				outmode="Update"
 		#thisnr = TH1F("hdummy1","dummy",10,0,10)
@@ -234,12 +241,13 @@ def MergePlot(filelist,outdir,appendagename=""):
 	#outfile.cd()
 	#stacknr.Write()
 	#stacker.Write()
-
+	outfile = TFile(outname,outmode)
 	dumnr = TH1F("hdummy1","dummy",10,0,10)
 	dumer = TH1F("hdummy1","dummy",10,0,10)
 	ROOT.DrawMerged(outfile,TString(outdir),dumnr,dumer)
 
 	outfile.Write()
+	outfile.Close()
 
 #####################################################################################
 
