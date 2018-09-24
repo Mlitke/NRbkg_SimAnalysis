@@ -1,0 +1,11 @@
+#!/bin/bash -l
+#>>SLURM configuration options
+#SBATCH --nodes=1
+#SBATCH --account=lz
+#SBATCH --qos=normal
+#SBATCH --partition=shared-chos
+#SBATCH --time=01:00:00
+#SBATCH --ntasks=1
+
+source /cvmfs/lz.opensciencegrid.org/BACCARAT/release-3.14.3/setup.sh
+/cvmfs/sft.cern.ch/lcg/external/Python/2.7.4/x86_64-slc6-gcc48-opt/bin/python2.7 $1 $2 $3 $4
