@@ -180,7 +180,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 					for filename in glob.glob(folder):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
-						infile = TFile(filename)
+						infile = TFile(filename,"READ")
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString(""),TString("creator("+icproc+")"))
 				
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
@@ -208,7 +208,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 		for filename in glob.glob(folder):
 			sourcepath = filename.split('/')[-1]
 			sourcename = sourcepath.rstrip('_Plots.root')
-			infile = TFile(filename)
+			infile = TFile(filename,"READ")
 			ROOT.MergeHists(outfile,infile,TString(sourcename))
 		#thisnr = TH1F("hdummy1","dummy",10,0,10)
 		#thiser = TH1F("hdummy1","dummy",10,0,10)

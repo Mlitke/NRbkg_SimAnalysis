@@ -280,6 +280,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		h1 = (TH2F*)fadd->Get(nr2d.Data()); 
 		TString mname="h_NR_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
+			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			h1->SetName("nr2copy");
 			h2 = (TH2F*)fmerged->Get(nr2d.Data());
 			h2->Add(h1);
@@ -287,6 +288,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 			h2->Write(mname.Data(),TObject::kWriteDelete);
 		}
 		else{
+			std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
 			h1->Write(mname.Data(),TObject::kWriteDelete);
 		}
@@ -300,6 +302,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		h1 = (TH2F*)fadd->Get(er2d.Data()); 
 		TString mname="h_ER_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
+			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			h1->SetName("er2copy");
 			h2 = (TH2F*)fmerged->Get(er2d.Data());
 			h2->Add(h1);
@@ -307,6 +310,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 			h2->Write(mname.Data(),TObject::kWriteDelete);
 		}
 		else{
+			std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
 			h1->Write(mname.Data(),TObject::kWriteDelete);
 		}
@@ -321,6 +325,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		h1 = (TH1F*)fadd->Get(nr1dav.Data()); 
 		TString mname="h_NR_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
+			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			h1->SetName("nr1copy");
 			h2 = (TH1F*)fmerged->Get(nr1dav.Data());
 			h2->Add(h1);
@@ -328,6 +333,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 			h2->Write(mname.Data(),TObject::kWriteDelete);
 		}
 		else{
+			std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
 			h1->Write(mname.Data(),TObject::kWriteDelete);
 		}
@@ -341,6 +347,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 		h1 = (TH1F*)fadd->Get(er1dav.Data()); 
 		TString mname="h_ER_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
+			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			h1->SetName("er1copy");
 			h2 = (TH1F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
@@ -348,6 +355,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 			h2->Write(mname.Data(),TObject::kWriteDelete);
 		}
 		else{
+			std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
 			h1->Write(mname.Data(),TObject::kWriteDelete);
 		}
@@ -355,7 +363,7 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	else
 		std::cout<<"WARNING :: "<<er1dav<<" Not found in input file!!!"<<std::endl;
 	
-	//fmerged->Write();
+	fmerged->Write();
 }
 
 int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process="",TString creatorprocess="",TString particlename="",TString volume="LiquidXenonTarget",TString savepng="y"){
