@@ -21,5 +21,5 @@ do
 		FileList=${infile}
 	fi
 done
-
+cd ${MYDIR}
 sbatch --job-name=merge --output=${MYDIR}/sh_out/merge.%j.out --error=${MYDIR}/sh_out/merge.%j.err ${MYDIR}/NRint.slr ${MYDIR}/src/plotrates.py "MergePlot" "${FileList}" "${INDIR}"

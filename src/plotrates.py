@@ -128,7 +128,8 @@ def MergePlot(filelist,outdir,appendagename=""):
 	indirs = filelist.split(',')
 
 	outname = outdir+"/"+appendagename+"MergedPlots.root"
-	outfile = TFile(outname,"RECREATE")
+	outmode = "RECREATE"
+	
 
 	pname = "/global/homes/l/lkorley/myprojectdir/HighNR/lists/processlist.txt"
 	cpname = "/global/homes/l/lkorley/myprojectdir/HighNR/lists/creatorlist.txt"
@@ -148,7 +149,10 @@ def MergePlot(filelist,outdir,appendagename=""):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
 						infile = TFile(filename,"READ")
+						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString("process("+iproc+")"))
+						if outmode=="RECREATE":
+							outmode="Update"
 				print "Drawing merged hist"
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
 				thiser = TH1F("hdummy1","dummy",10,0,10)
@@ -181,7 +185,10 @@ def MergePlot(filelist,outdir,appendagename=""):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
 						infile = TFile(filename,"READ")
+						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString(""),TString("creator("+icproc+")"))
+						if outmode=="RECREATE":
+							outmode="Update"
 				
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
 				thiser = TH1F("hdummy1","dummy",10,0,10)
@@ -209,7 +216,10 @@ def MergePlot(filelist,outdir,appendagename=""):
 			sourcepath = filename.split('/')[-1]
 			sourcename = sourcepath.rstrip('_Plots.root')
 			infile = TFile(filename,"READ")
+			outfile = TFile(outname,outmode)
 			ROOT.MergeHists(outfile,infile,TString(sourcename))
+			if outmode=="RECREATE":
+				outmode="Update"
 		#thisnr = TH1F("hdummy1","dummy",10,0,10)
 		#thiser = TH1F("hdummy1","dummy",10,0,10)
 		#checkout = ROOT.DrawMerged(outfile,TString(outdir),thisnr,thiser,"","","","LiquidXenonTarget","n")
