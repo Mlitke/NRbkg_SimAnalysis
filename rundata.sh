@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=/global/homes/w/wangryan/lz_project_data/wangbtc/G4_Validation_data/ML/batch_job
-MYDIR=/global/homes/l/lkorley/myprojectdir/HighNR
+MYDIR=/global/project/projectdirs/lz/users/lkorley/HighNR
 OUTDIR=${MYDIR}/output
 FileList=""
 

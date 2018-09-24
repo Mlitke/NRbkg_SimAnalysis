@@ -1,5 +1,5 @@
 #!/bin/bash
-MYDIR=/global/homes/l/lkorley/myprojectdir/HighNR
+MYDIR=/global/project/projectdirs/lz/users/lkorley/HighNR
 INDIR=${MYDIR}/output
 source /cvmfs/lz.opensciencegrid.org/BACCARAT/release-3.14.3/setup.sh
 FileList=""
