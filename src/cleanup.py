@@ -8,7 +8,7 @@ def cleanup(mdir):
 	for filename in glob.glob(wcardname):
 		oprocesslist = []
 		with open(filename) as f:
-			oprocesslist = f.readlines()
+			oprocesslist = f.read().splitlines()
 			for ip in oprocesslist:
 				if ip not in processlist:
 					processlist.append(ip)
@@ -28,7 +28,7 @@ def cleanup(mdir):
 	for filename in glob.glob(wcardname):
 		oprocesslist = []
 		with open(filename) as f:
-			oprocesslist = f.readlines()
+			oprocesslist = f.read().splitlines()
 			for ip in oprocesslist:
 				if ip not in processlist:
 					processlist.append(ip)

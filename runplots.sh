@@ -25,16 +25,29 @@ do
 	if ls ${f}/*SpectrumData.root 1> /dev/null 2>&1; then
 		echo "${f} is a good boy"
 	else
+	        echo "${f} is a naughty one"
 		continue
 	fi
 	OUTDIR=${INDIR}/${f}/Plots
 	if [ ! -d ${OUTDIR} ]; then
 		mkdir ${OUTDIR}
 	fi
-
+	FileList=""
 	for flow in ${f}/*SpectrumData.root
 	do
-		sbatch --job-name=${f} --output=${MYDIR}/sh_out/${f}.%j.out --error=${MYDIR}/sh_out/${f}.%j.err ${MYDIR}/NRint.slr ${MYDIR}/src/plotrates.py "PlotChains" "${INDIR}/${flow} ${OUTDIR}" "cluster" ${MAKELISTS}
+	    if [ $1 -eq 0 ]; then
+		if [ "${FileList}" != "" ]; then
+		    FileList=${FileList},${INDIR}/${flow}
+		else
+		  FileList=${INDIR}/${flow}
+		fi
+	    else
+		sbatch --mem=6G --job-name=${f} --output=${MYDIR}/sh_out/${f}.%j.out --error=${MYDIR}/sh_out/${f}.%j.err ${MYDIR}/NRint.slr ${MYDIR}/src/plotrates.py "PlotChains" "${INDIR}/${flow}" "${OUTDIR}" "cluster" ${MAKELISTS}
+	    fi
 	done
+	if [ $1 -eq 0 ]; then
+	    echo "Running plotter with file list: ${FileList}"
+	    /cvmfs/sft.cern.ch/lcg/external/Python/2.7.4/x86_64-slc6-gcc48-opt/bin/python2.7 ${MYDIR}/src/plotrates.py "PlotChains" "${FileList}" "${OUTDIR}" "${f}" ${MAKELISTS}
+	fi
 done
 cd ${MYDIR}

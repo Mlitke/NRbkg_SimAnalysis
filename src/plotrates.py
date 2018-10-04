@@ -21,14 +21,14 @@ def GetProcesses(filelist,appendagename=""):
 	ocprocesslist = []
 	if os.path.exists(pname):
 		with open(pname) as f:
-			oprocesslist = f.readlines()
+			oprocesslist = f.read().splitlines()
 	else:
 		cmd = "touch " + pname
 		os.system(cmd)
 
 	if os.path.exists(cpname):
 		with open(cpname) as f:
-			ocprocesslist = f.readlines()
+			ocprocesslist = f.read().splitlines()
 	else:
 		cmd = "touch " + cpname
 		os.system(cmd)
@@ -72,14 +72,15 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 	mychain = TChain("DTree")
 	for folder in indirs:
 		#folder += "/*_SpectrumData.root"
-		for filename in glob.glob(folder):
-			mychain.Add(str(filename))
+		#for filename in glob.glob(folder):
+		print "Adding file: "+folder
+		mychain.Add(str(folder))
 
 	pname = "/global/homes/l/lkorley/myprojectdir/HighNR/lists/processlist.txt"
 	cpname = "/global/homes/l/lkorley/myprojectdir/HighNR/lists/creatorlist.txt"
 	if os.path.exists(pname):
 		with open(pname) as f:
-			proclist = f.readlines()
+			proclist = f.read().splitlines()
 			for iproc in proclist:
 				if iproc=="":
 					continue
@@ -89,7 +90,7 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 
 	if os.path.exists(cpname):
 		with open(cpname) as f:
-			cproclist = f.readlines()
+			cproclist = f.read().splitlines()
 			for icproc in cproclist:
 				if icproc=="":
 					continue
@@ -105,10 +106,10 @@ def PlotChains(filelist,outdir,sourcename="cluster",makelists=0):
 #####################################################################################
 
 def StackHists(comparison, dict1):
-	gStyle.SetPalette(kOcean)
+	ROOT.gStyle.SetPalette(kOcean)
 	c1=ROOT.TCanvas(comparison,comparison,800,600)
-	gPad.SetLogy()
-	gPad.SetLogx()
+	ROOT.gPad.SetLogy()
+	ROOT.gPad.SetLogx()
 	hists = ROOT.THStack(comparisons,"Energy distribution by"+comparison)
 	for key in dict1: 
 		dict1[key].GetXaxis().SetTitle("Energy [keV]")
@@ -136,7 +137,7 @@ def MergePlot(filelist,outdir,appendagename=""):
 
 	if os.path.exists(pname):
 		with open(pname) as f:
-			proclist = f.readlines()
+			proclist = f.read().splitlines()
 			nrhists = {}
 			erhists = {}
 			for iproc in proclist:
@@ -148,15 +149,19 @@ def MergePlot(filelist,outdir,appendagename=""):
 					for filename in glob.glob(folder):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
+						print "Merging in "+sourcename
 						infile = TFile(filename,"READ")
 						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString("process("+iproc+")"))
 						outfile.Close()
+						infile.Close()
+						#infile.Clear()
+						#outfile.Clear()
 						if outmode=="RECREATE":
 							outmode="Update"
 				print "Drawing merged hist"
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
-				thiser = TH1F("hdummy1","dummy",10,0,10)
+				thiser = TH1F("hdummy2","dummy",10,0,10)
 				checkout = ROOT.DrawMerged(outfile,TString(outdir),thisnr,thiser,TString(iproc))
 				if checkout != 0:
 					print "ERROR :: One of the merged Hists could NOT be loaded!!!\n"
@@ -171,11 +176,13 @@ def MergePlot(filelist,outdir,appendagename=""):
 			stacknr.Write()
 			stacker.Write()
 			outfile.Write()
+			outfile.Close()
+
 
 
 	if os.path.exists(cpname):
 		with open(cpname) as f:
-			cproclist = f.readlines()
+			cproclist = f.read().splitlines()
 			nrhists = {}
 			erhists = {}
 			for icproc in cproclist:
@@ -187,15 +194,17 @@ def MergePlot(filelist,outdir,appendagename=""):
 					for filename in glob.glob(folder):
 						sourcepath = filename.split('/')[-1]
 						sourcename = sourcepath.rstrip('_Plots.root')
-						infile = TFile(filename,"READ")
+						print "Merging in "+sourcename
+      						infile = TFile(filename,"READ")
 						outfile = TFile(outname,outmode)
 						ROOT.MergeHists(outfile,infile,TString(sourcename),TString(""),TString("creator("+icproc+")"))
 						outfile.Close()
+						infile.Close()
 						if outmode=="RECREATE":
 							outmode="Update"
 				
 				thisnr = TH1F("hdummy1","dummy",10,0,10)
-				thiser = TH1F("hdummy1","dummy",10,0,10)
+				thiser = TH1F("hdummy2","dummy",10,0,10)
 				checkout = ROOT.DrawMerged(outfile,TString(outdir),thisnr,thiser,TString(""),TString(icproc))
 				if checkout != 0:
 					print "ERROR :: One of the merged Hists could NOT be loaded!!!\n"
@@ -210,10 +219,12 @@ def MergePlot(filelist,outdir,appendagename=""):
 			stacknr.Write()
 			stacker.Write()
 			outfile.Write()
+			outfile.Close()
 
 
 	#nrhists = {}
 	#erhists = {}
+	"""
 	for folder in indirs:
 		component = folder.split('*')[0]
 		component = component.rstrip('/Plots/')
@@ -243,12 +254,12 @@ def MergePlot(filelist,outdir,appendagename=""):
 	#stacker.Write()
 	outfile = TFile(outname,outmode)
 	dumnr = TH1F("hdummy1","dummy",10,0,10)
-	dumer = TH1F("hdummy1","dummy",10,0,10)
+	dumer = TH1F("hdummy2","dummy",10,0,10)
 	ROOT.DrawMerged(outfile,TString(outdir),dumnr,dumer)
-
+       
 	outfile.Write()
 	outfile.Close()
-
+	"""
 #####################################################################################
 
 if __name__ == '__main__':

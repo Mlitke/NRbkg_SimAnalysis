@@ -47,7 +47,7 @@ do
 		let c++
 		cd ${MYDIR}
 		if [ $1 -ne 0 ]; then
-			sbatch --job-name=${f} --output=${MYDIR}/sh_out/${f}.%j.out --error=${MYDIR}/sh_out/${f}.%j.err ${MYDIR}/NRint.slr ${MYDIR}/src/reducedata.py ${flow} ${OUTDIR}/${f} ${c}_
+			sbatch --mem=2G --job-name=${f} --output=${MYDIR}/sh_out/${f}.%j.out --error=${MYDIR}/sh_out/${f}.%j.err ${MYDIR}/NRint.slr ${MYDIR}/src/reducedata.py ${flow} ${OUTDIR}/${f} ${c}_
 		fi
 		cd ${DIR}
 	done

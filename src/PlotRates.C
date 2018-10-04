@@ -214,6 +214,8 @@ std::pair<TH2F*,TH2F*> Get2DHist(TChain* reducedtree,TString name,TString proces
 
 void WriteHists(TChain* reducedtree,TString outdir,TString name,TString process="",TString creatorprocess="",TString particlename="",TString volume="LiquidXenonTarget",double timeup=timebase){
 	
+  TFile* fout = new TFile(outdir+"/"+name+"_Plots.root","Update");
+
 	std::cout<<"Getting 2D Hists"<<std::endl;		
 	std::pair<TH2F*,TH2F*> hpair = Get2DHist(reducedtree,name,process,creatorprocess,particlename,volume,timeup);
 	
@@ -223,7 +225,7 @@ void WriteHists(TChain* reducedtree,TString outdir,TString name,TString process=
 	if(process!=""){plotname+="_"+process;}
 	if(creatorprocess!=""){plotname+="_"+creatorprocess;}
 
-	TFile* fout = new TFile(outdir+"/"+name+"_Plots.root","Update");
+	//	TFile* fout = new TFile(outdir+"/"+name+"_Plots.root","Update");
 
 	std::cout<<"Calculating N/T"<<std::endl;
 	std::pair<TH1F*,TH1F*> havpair;
@@ -234,7 +236,7 @@ void WriteHists(TChain* reducedtree,TString outdir,TString name,TString process=
 	//std::pair<TH1F*,TH1F*> hfitpair;
 	//hfitpair.first = (TH1F*)FindFitRates(hpair.first,TString("NR_")+plotname,hpair.first->GetYaxis()->GetXmax());
 	//hfitpair.second = (TH1F*)FindFitRates(hpair.second,TString("ER_")+plotname,hpair.second->GetYaxis()->GetXmax());
-	
+	fout->cd();
 	std::cout<<"Writing results to file"<<std::endl;
 	hpair.first->Write("",TObject::kWriteDelete);
 	hpair.second->Write("",TObject::kWriteDelete);
@@ -248,8 +250,6 @@ void WriteHists(TChain* reducedtree,TString outdir,TString name,TString process=
 	TCanvas *c1 = drawhists2(plotname,hpair.first,havpair.first,hpair.second,havpair.second);
 	c1->Write("",TObject::kWriteDelete);
 	
-	fout->Write();
-	
 	std::stringstream oss;
 	oss<<outdir<<"/"<<plotname.Data()<<".png";
 	std::string str(oss.str());
@@ -257,6 +257,17 @@ void WriteHists(TChain* reducedtree,TString outdir,TString name,TString process=
 	std::cout<<"Saving canvas as "<<pngname<<std::endl;
 	gPad->Update();
 	c1->SaveAs(pngname);
+	
+	fout->Write();
+	fout->Close();
+
+	//	delete c1;
+	//       	delete hpair.first;
+	//       	delete hpair.second;
+	//	delete havpair.first;
+	//	delete havpair.second;
+	delete fout;
+
 }
 
 void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TString creatorprocess="",TString particlename="",TString volume="LiquidXenonTarget")
@@ -274,96 +285,102 @@ void MergeHists(TFile* fmerged,TFile* fadd,TString name,TString process="",TStri
 	TString nr1dav = TString("h_NR_")+plotname+TString("_AvRate");
 	TString er1dav = TString("h_ER_")+plotname+TString("_AvRate");
 
-	std::cout<<"Merging in NR 2D"<<std::endl;
+	TH2F *h1,*h2;
+	TH1F *h11,*h22;
+	//	std::cout<<"Merging in NR 2D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(nr2d.Data())){
-		TH2F *h1,*h2;
+	  //TH2F *h1,*h2;
 		h1 = (TH2F*)fadd->Get(nr2d.Data()); 
 		TString mname="h_NR_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
-			std::cout<<"Getting uptodate merged hist"<<std::endl;
+		  //			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			//h1->SetName("nr2copy");
 			h2 = (TH2F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write("",TObject::kWriteDelete);
+			h2->Write("",TObject::kOverwrite);
 		}
 		else{
-			std::cout<<"New merge hist"<<std::endl;
+		  //			std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
-			h1->Write(mname.Data(),TObject::kWriteDelete);
+			h1->Write(mname.Data(),TObject::kOverwrite);
 		}
 	}
 	else
 		std::cout<<"WARNING :: "<<nr2d<<" Not found in input file!!!"<<std::endl;
 
-	std::cout<<"Merging in ER 2D"<<std::endl;
+	//	std::cout<<"Merging in ER 2D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(er2d.Data())){
-		TH2F *h1,*h2;
+	  //	TH2F *h1,*h2;
 		h1 = (TH2F*)fadd->Get(er2d.Data()); 
 		TString mname="h_ER_EvT"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
-			std::cout<<"Getting uptodate merged hist"<<std::endl;
+		  //			std::cout<<"Getting uptodate merged hist"<<std::endl;
 			//h1->SetName("er2copy");
 			h2 = (TH2F*)fmerged->Get(mname.Data());
 			h2->Add(h1);
 			fmerged->cd();
-			h2->Write("",TObject::kWriteDelete);
+			h2->Write("",TObject::kOverwrite);
 		}
 		else{
-			std::cout<<"New merge hist"<<std::endl;
+		  //		std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
-			h1->Write(mname.Data(),TObject::kWriteDelete);
+			h1->Write(mname.Data(),TObject::kOverwrite);
 		}
 	}
 	else
 		std::cout<<"WARNING :: "<<er2d<<" Not found in input file!!!"<<std::endl;
 
 
-	std::cout<<"Merging in NR 1D"<<std::endl;
+	//std::cout<<"Merging in NR 1D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(nr1dav.Data())){
-		TH1F *h1,*h2;
-		h1 = (TH1F*)fadd->Get(nr1dav.Data()); 
+	  //	TH1F *h1,*h2;
+		h11 = (TH1F*)fadd->Get(nr1dav.Data()); 
 		TString mname="h_NR_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
-			std::cout<<"Getting uptodate merged hist"<<std::endl;
+		  //	std::cout<<"Getting uptodate merged hist"<<std::endl;
 			//h1->SetName("nr1copy");
-			h2 = (TH1F*)fmerged->Get(mname.Data());
-			h2->Add(h1);
+			h22 = (TH1F*)fmerged->Get(mname.Data());
+			h22->Add(h11);
 			fmerged->cd();
-			h2->Write("",TObject::kWriteDelete);
+			h22->Write("",TObject::kOverwrite);
 		}
 		else{
-			std::cout<<"New merge hist"<<std::endl;
+		  //	std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
-			h1->Write(mname.Data(),TObject::kWriteDelete);
+			h11->Write(mname.Data(),TObject::kOverwrite);
 		}
 	}
 	else
 		std::cout<<"WARNING :: "<<nr1dav<<" Not found in input file!!!"<<std::endl;
 
-	std::cout<<"Merging in ER 1D"<<std::endl;
+	//std::cout<<"Merging in ER 1D"<<std::endl;
 	if(fadd->GetListOfKeys()->Contains(er1dav.Data())){
-		TH1F *h1,*h2;
-		h1 = (TH1F*)fadd->Get(er1dav.Data()); 
+	  //TH1F *h1,*h2;
+		h11 = (TH1F*)fadd->Get(er1dav.Data()); 
 		TString mname="h_ER_AvRate"+mergedname;
 		if( fmerged->GetListOfKeys()->Contains(mname.Data()) ){
-			std::cout<<"Getting uptodate merged hist"<<std::endl;
+		  //	std::cout<<"Getting uptodate merged hist"<<std::endl;
 			//h1->SetName("er1copy");
-			h2 = (TH1F*)fmerged->Get(mname.Data());
-			h2->Add(h1);
+			h22 = (TH1F*)fmerged->Get(mname.Data());
+			h22->Add(h11);
 			fmerged->cd();
-			h2->Write("",TObject::kWriteDelete);
+			h22->Write("",TObject::kOverwrite);
 		}
 		else{
-			std::cout<<"New merge hist"<<std::endl;
+		  //	std::cout<<"New merge hist"<<std::endl;
 			fmerged->cd();
-			h1->Write(mname.Data(),TObject::kWriteDelete);
+			h11->Write(mname.Data(),TObject::kOverwrite);
 		}
 	}
 	else
 		std::cout<<"WARNING :: "<<er1dav<<" Not found in input file!!!"<<std::endl;
 	
 	fmerged->Write();
+        //delete h11;
+	//delete h22;
+	//	delete h1;
+	//	delete h2;
 }
 
 int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process="",TString creatorprocess="",TString particlename="",TString volume="LiquidXenonTarget",TString savepng="y"){
@@ -377,8 +394,8 @@ int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process
 	//TH1F* nr1dav,er1dav;
 	TString nr2dname = TString("h_NR_EvT")+mergedname;
 	TString er2dname = TString("h_ER_EvT")+mergedname;
-	TString nr1davname = TString("h_NR_AvRate")+mergedname+TString("_AvRate");
-	TString er1davname = TString("h_ER_AvRate")+mergedname+TString("_AvRate");
+	TString nr1davname = TString("h_NR_AvRate")+mergedname;
+	TString er1davname = TString("h_ER_AvRate")+mergedname;
 
 	if(fmerged->GetListOfKeys()->Contains(nr2dname.Data()))
 		nr2d = (TH2F*)fmerged->Get(nr2dname);
@@ -388,17 +405,17 @@ int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process
 	if(fmerged->GetListOfKeys()->Contains(er2dname.Data()))
 		er2d = (TH2F*)fmerged->Get(er2dname);
 	else
-		return 1;
+		return 2;
 
 	if(fmerged->GetListOfKeys()->Contains(nr1davname.Data()))
 		hnr = (TH1F*)fmerged->Get(nr1davname);
 	else
-		return 1;
+		return 3;
 
 	if(fmerged->GetListOfKeys()->Contains(er1davname.Data()))
 		her = (TH1F*)fmerged->Get(er1davname);
 	else
-		return 1;
+		return 3;
 
 	fmerged->cd();
 
@@ -415,7 +432,9 @@ int DrawMerged(TFile* fmerged,TString outdir,TH1F* hnr,TH1F* her,TString process
 		gPad->Update();
 		c1->SaveAs(pngname);
 	}
-
+	delete c1;
+	delete nr2d;
+	delete er2d;
 	return 0;
 }
 

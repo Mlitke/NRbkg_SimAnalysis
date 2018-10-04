@@ -17,11 +17,11 @@ def reduce(dirlist,outdir,listname=""):
 	if os.path.exists(pname):
 		pname_wa ='a'
 		with open(pname) as f:
-			oprocesslist = f.readlines()
+			oprocesslist = f.read().splitlines()
 	if os.path.exists(cpname):
 		cpname_wa = 'a'
 		with open(cpname) as f:
-			ocprocesslist = f.readlines()
+			ocprocesslist = f.read().splitlines()
 
 	processlist = []
 	cprocesslist = []
